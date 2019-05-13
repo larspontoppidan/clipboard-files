@@ -6,6 +6,8 @@ Clipboard-files provides a series of command line operations to cut, copy and pa
 
 The usage commands: `ccopy`, `ccut`, `cpaste`, `cshow` and `cclear` are symbolic links to the main script named `clipboard-files` in order to have short and concise command names.
 
+Read a little blog post about the script here: https://larsee.com/blog/2019/05/clipboard-files/
+
 ## Usage
 
 - `ccut FILE [FILE]...` Cut files or folders to clipboard
