@@ -2,7 +2,7 @@
 Cut, copy and paste files from the clipboard in a Linux terminal.
 
 ## Description
-Clipboard-files provides a series of command line operations to cut, copy and paste files from the desktop environment clipboard in a terminal. Files and folders can be copied and moved, to and from file manager applications, as well as between terminal instances.
+Clipboard-files provides a series of command line operations to cut, copy and paste files from the desktop environment clipboard with a Linux terminal. Files and folders can be copied and moved, to and from file manager applications, as well as between terminal instances.
 
 The usage commands: `ccopy`, `ccut`, `cpaste`, `cshow` and `cclear` are symbolic links to the main script named `clipboard-files` in order to have short and concise command names.
 
@@ -84,4 +84,4 @@ sudo apt purge xclip
 
 ## Thanks to
 
-The user `woodenshoe-wi` in this thread: http://murga-linux.com/puppy/viewtopic.php?t=111880&start=15 for writing the clipboard interfacing code the script was based on.
+- The user `woodenshoe-wi` in this thread: http://murga-linux.com/puppy/viewtopic.php?t=111880&start=15 for writing the original clipboard interfacing code
