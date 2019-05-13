@@ -1,5 +1,5 @@
 # clipboard-files
-Command line tool for cutting, copying and pasting files from the desktop environment clipboard in Linux.
+Cutting, copying and pasting files from the clipboard in a Linux terminal.
 
 ## Description
 Clipboard-files provides a series of command line operations to cut, copy and paste files from the desktop environment clipboard in the terminal. Files and folders can be copied and moved, to and from file manager applications, as well as between terminal instances.
