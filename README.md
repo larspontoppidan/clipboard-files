@@ -15,6 +15,29 @@ The usage commands: `ccopy`, `ccut`, `cpaste`, `cshow` and `cclear` are symbolic
 - `cclear` Clear clipboard without any file operations
 - `clipboard-files` Show help
 
+## Example
+
+```text
+$ ccopy file1.txt file2.jpg
+2 item(s) copied to clipboard
+$ cshow
+Operation: copy
+/home/lars/temp/file1.txt
+/home/lars/temp/file2.jpg
+$ cd folder/
+$ cpaste
+Copying the following items(s) to current dir:
+/home/lars/temp/file1.txt
+/home/lars/temp/file2.jpg
+$ ccut *
+2 item(s) cut to clipboard
+$ cd ..
+$ cpaste
+Moving the following items(s) to current dir:
+/home/lars/temp/folder/file1.txt
+/home/lars/temp/folder/file2.jpg
+```
+
 ## Limitations
 
 The script may not work in all desktop environments. The following should be supported:
