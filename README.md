@@ -81,3 +81,7 @@ To remove `xclip`:
 ```text
 sudo apt purge xclip
 ```
+
+## Thanks to
+
+The user `woodenshoe-wi` in this thread: http://murga-linux.com/puppy/viewtopic.php?t=111880&start=15 for writing the clipboard interfacing code the script was based on.
