@@ -46,3 +46,15 @@ The script requires `xclip`. Install it with:
 ```text
 sudo apt install xclip
 ```
+
+## Uninstallation
+
+```text
+cd /usr/bin
+sudo rm clipboard-files ccut ccopy cpaste cshow cclear
+```
+
+To remove `xclip`:
+```text
+sudo apt purge xclip
+```
