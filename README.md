@@ -15,6 +15,7 @@ Read a little blog post about the script here: https://larsee.com/blog/2019/05/c
 - `cpaste` Paste from clipboard to the current dir
 - `cshow` Show files on clipboard
 - `cclear` Clear clipboard without any file operations
+- `. ccd` cd to the dir of the 1st file on clipboard
 - `clipboard-files` Show help
 
 ## Example
@@ -64,6 +65,7 @@ sudo ln -s clipboard-files ccut
 sudo ln -s clipboard-files cpaste
 sudo ln -s clipboard-files cshow
 sudo ln -s clipboard-files cclear
+sudo ln -s clipboard-files ccd
 ```
 
 The script requires `xclip`. Install it with:
@@ -76,7 +78,7 @@ sudo apt install xclip
 
 ```text
 cd /usr/bin
-sudo rm clipboard-files ccut ccopy cpaste cshow cclear
+sudo rm clipboard-files ccut ccopy cpaste cshow cclear ccd
 ```
 
 To remove `xclip`:
