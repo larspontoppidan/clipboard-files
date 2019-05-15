@@ -33,6 +33,17 @@ function show_help {
   echo ""
 }
 
+# Is this script being sourced?
+if [[ -z $BASH_SOURCE ]] || [[ $(basename ${0#-}) != ${BASH_SOURCE##*/} ]]; then
+  # Being sourced
+  sourced=true
+  EXIT=return
+else
+  # Running directly
+  sourced=false
+  EXIT=exit
+fi
+
 if [[ $0 == *"ccopy" ]]; then
   op=copy
 elif [[ $0 == *"ccut" ]]; then
@@ -41,14 +52,14 @@ elif [[ $0 == *"cpaste" ]]; then
   op=paste
 elif [[ $0 == *"cshow" ]]; then
   op=show
-elif [[ $0 == *"bash" ]]; then
-  # When sourcing 'ccd' or any of the symlinks, $0 will be "bash"
-  op=cd
 elif [[ $0 == *"cclear" ]]; then
   op=clear
+elif [[ $sourced == true ]]; then
+  # When this is sourced, assume ccd
+  op=cd
 else
   show_help
-  exit
+  $EXIT
 fi
 
 if [[ $XDG_CURRENT_DESKTOP == *"MATE"* ]]; then
@@ -61,20 +72,20 @@ elif [[ $XDG_CURRENT_DESKTOP == *"Unity"* ]]; then
   cb_target=x-special/gnome-copied-files
 else
   echo "Unsupported desktop environment: '${XDG_CURRENT_DESKTOP}', exiting"
-  if [[ $0 == *"bash" ]]; then return 0; else exit; fi
+  $EXIT
 fi
 
 xclip -version 1>/dev/null 2>/dev/null
 result=$?
 if [ $result != 0 ]; then
   echo "xclip doesn't seem to be installed, exiting"
-  if [[ $0 == *"bash" ]]; then return 0; else exit; fi
+  $EXIT
 fi
 
 if [ "${op}" = paste ] || [ "${op}" = show ] || [ "${op}" = cd ]; then
   if [ $# -ne 0 ]; then
     syntax_error
-    if [[ $0 == *"bash" ]]; then return 0; else exit; fi
+    $EXIT
   fi
 
   raw=$(xclip -o -selection clipboard -t ${cb_target} 2>/dev/null)
@@ -82,7 +93,7 @@ if [ "${op}" = paste ] || [ "${op}" = show ] || [ "${op}" = cd ]; then
 
   if [ $result != 0 ] || [ ${#raw} == 0 ]; then
     echo "No files on clipboard"
-    if [[ $0 == *"bash" ]]; then return 0; else exit; fi
+    $EXIT
   fi
 
   urldecode() { : "${*//+/ }"; echo -e "${_//%/\\x}"; }
@@ -141,7 +152,7 @@ elif [ "${op}" = copy ] || [ "${op}" = cut ]; then
 
   if [ $# -lt 1 ]; then
     syntax_error
-    exit
+    $EXIT
   fi
 
   if [ "${op}" = cut ]; then
@@ -155,7 +166,7 @@ elif [ "${op}" = copy ] || [ "${op}" = cut ]; then
   do
      if [[ ${one_arg} == -* ]]; then
        syntax_error
-       exit
+       $EXIT
      fi
 
      filename=$(realpath "${one_arg}")
@@ -184,7 +195,7 @@ file://${filename}"
 elif [ "${op}" = clear ]; then
   if [ $# -ne 0 ]; then
     syntax_error
-    exit
+    $EXIT
   fi
 
   echo -n | xclip -selection clipboard 
