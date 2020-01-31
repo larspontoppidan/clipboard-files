@@ -121,12 +121,14 @@ if [ "${op}" = paste ] || [ "${op}" = show ] || [ "${op}" = cd ]; then
        continue
      fi
 
-     filename=${line#file:\/\/}
-
-     # certain programs may add the file path to the clipboard
-     # with the "file:" prefix, instead of "file://"
-     filename=${line#file:}
-
+     if [[ $line == file:\/\/* ]]; then
+       filename=${line#file:\/\/}
+     else
+       # certain programs may add the file path to the clipboard
+       # with the "file:" prefix, instead of "file://"
+       filename=${line#file:}
+     fi
+     
      if [ "${op}" = cd ]; then
        path=$(dirname -- "${filename}")
        cd "${path}"
