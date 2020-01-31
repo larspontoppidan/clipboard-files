@@ -1,12 +1,12 @@
 #!/bin/bash
 
-# clipboard-files - Cut, copy and paste files from the clipboard in a Linux terminal. 
+# clipboard-files - Cut, copy and paste files from the clipboard in a Linux terminal.
 #
 # Read more: https://github.com/larspontoppidan/clipboard-files
 #
 # By Lars Ole Pontoppidan
 #
-# Clipboard interfacing code inspired from: 
+# Clipboard interfacing code inspired from:
 # http://murga-linux.com/puppy/viewtopic.php?t=111880&start=15
 #
 
@@ -121,8 +121,14 @@ if [ "${op}" = paste ] || [ "${op}" = show ] || [ "${op}" = cd ]; then
        continue
      fi
 
-     filename=${line#file:\/\/}
-
+     if [[ $line == file:\/\/* ]]; then
+       filename=${line#file:\/\/}
+     else
+       # certain programs may add the file path to the clipboard
+       # with the "file:" prefix, instead of "file://"
+       filename=${line#file:}
+     fi
+     
      if [ "${op}" = cd ]; then
        path=$(dirname -- "${filename}")
        cd "${path}"
@@ -142,10 +148,10 @@ if [ "${op}" = paste ] || [ "${op}" = show ] || [ "${op}" = cd ]; then
          echo "File doesn't exist or error: ${filename}"
        fi
      fi
-  done <<< "${filelist}" 
-  
+  done <<< "${filelist}"
+
   if [ "${op}" = paste ] && [ "${paste_mode}" = "cut" ]; then
-    echo -n | xclip -selection clipboard 
+    echo -n | xclip -selection clipboard
   fi
 
 elif [ "${op}" = copy ] || [ "${op}" = cut ]; then
@@ -179,7 +185,7 @@ file://${filename}"
        echo "File doesn't exist or error: ${filename}"
      fi
   done
-  
+
   if [ $count -ge 1 ]; then
     echo -n "${clipboard}" | xclip -i -selection clipboard -t ${cb_target}
     result=$?
@@ -198,7 +204,7 @@ elif [ "${op}" = clear ]; then
     $EXIT
   fi
 
-  echo -n | xclip -selection clipboard 
+  echo -n | xclip -selection clipboard
   result=$?
 
   if [ $result != 0 ]; then
