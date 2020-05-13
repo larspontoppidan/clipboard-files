@@ -70,6 +70,8 @@ elif [[ $XDG_CURRENT_DESKTOP == *"XFCE"* ]]; then
   cb_target=x-special/gnome-copied-files
 elif [[ $XDG_CURRENT_DESKTOP == *"Unity"* ]]; then
   cb_target=x-special/gnome-copied-files
+elif [[ $XDG_CURRENT_DESKTOP == *"KDE"* ]]; then
+  cb_target=x-special/KDE-copied-files
 else
   echo "Unsupported desktop environment: '${XDG_CURRENT_DESKTOP}', exiting"
   $EXIT
