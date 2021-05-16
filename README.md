@@ -49,6 +49,7 @@ The script may not work in all desktop environments. The following should be sup
 - Mate
 - Unity
 - XFCE
+- KDE
 
 ## Installation
 
