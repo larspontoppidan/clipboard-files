@@ -23,7 +23,7 @@ function show_help {
   echo "Usage:"
   echo "  ccut FILE [FILE]...   Cut files or folders to clipboard"
   echo "  ccopy FILE [FILE]...  Copy files or folders to clipboard"
-  echo "  cpaste                Paste from clipboard to current dir"
+  echo "  cpaste [DIR]          Paste files from clipboard into DIR or current dir"
   echo "  cshow                 Show files on clipboard"
   echo "  cclear                Clear clipboard without any file operations"
   echo "  . ccd                 cd to the folder of the 1st file on clipboard"
@@ -85,7 +85,10 @@ if [ $result != 0 ]; then
 fi
 
 if [ "${op}" = paste ] || [ "${op}" = show ] || [ "${op}" = cd ]; then
-  if [ $# -ne 0 ]; then
+  target_dir=.
+  if [[ $op == paste && $# -eq 1 ]]; then
+    target_dir=$1
+  elif [[ $# -ne 0 ]]; then
     syntax_error
     $EXIT
   fi
@@ -116,9 +119,9 @@ if [ "${op}" = paste ] || [ "${op}" = show ] || [ "${op}" = cd ]; then
        elif [ "${op}" = "cd" ]; then
          true
        elif [ "${paste_mode}" = "cut" ]; then
-         echo "Moving the following items(s) to current dir:"
+         echo "Moving the following items(s) to $target_dir"
        else
-         echo "Copying the following items(s) to current dir:"
+         echo "Copying the following items(s) to $target_dir"
        fi
        continue
      fi
@@ -142,9 +145,9 @@ if [ "${op}" = paste ] || [ "${op}" = show ] || [ "${op}" = cd ]; then
      if [ "${op}" != show ]; then
        if [ -e "${filename}" ]; then
          if [ "${paste_mode}" = "cut" ]; then
-           mv -f "${filename}" .
+           mv -f "${filename}" "$target_dir"
          else
-           cp -af --no-preserve=context,links "${filename}" .
+           cp -af --no-preserve=context,links "${filename}" "$target_dir"
          fi
        else
          echo "File doesn't exist or error: ${filename}"
