@@ -100,7 +100,7 @@ if [ "${op}" = paste ] || [ "${op}" = show ] || [ "${op}" = cd ]; then
     $EXIT
   fi
 
-  urldecode() { : "${*//+/ }"; echo -e "${_//%/\\x}"; }
+  urldecode() { echo -e "${*//%/\\x}"; }
 
   filelist=$(urldecode "$raw")
   carriage_return=$(echo -ne '\r')
