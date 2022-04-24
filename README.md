@@ -49,9 +49,17 @@ The script may not work in all desktop environments. The following should be sup
 - Mate
 - Unity
 - XFCE
-- KDE
+- KDE Plasma (ccut not supported)
 
 ## Installation
+
+The script requires `xclip`. Install from a package repository, eg.:
+
+```text
+sudo apt install xclip
+```
+
+### Non-KDE-Plasma install
 
 The following commands will install the script in `/usr/bin/` and create the required command symlinks.
 
@@ -69,17 +77,26 @@ sudo ln -s clipboard-files cclear
 sudo ln -s clipboard-files ccd
 ```
 
-The script requires `xclip`. Install it with:
+### KDE-Plasma install
+
+The following commands will install the script in `/usr/bin/` and create the required command symlinks.
 
 ```text
-sudo apt install xclip
+git clone https://github.com/larspontoppidan/clipboard-files.git
+sudo cp clipboard-files/clipboard-files-kde-plasma /usr/bin/
+cd /usr/bin
+sudo ln -s clipboard-files-kde-plasma ccopy
+sudo ln -s clipboard-files-kde-plasma cpaste
+sudo ln -s clipboard-files-kde-plasma cshow
+sudo ln -s clipboard-files-kde-plasma cclear
+sudo ln -s clipboard-files-kde-plasma ccd
 ```
 
 ## Uninstallation
 
 ```text
 cd /usr/bin
-sudo rm clipboard-files ccut ccopy cpaste cshow cclear ccd
+sudo rm clipboard-files ccopy cpaste cshow cclear ccd ccut
 ```
 
 To remove `xclip`:
