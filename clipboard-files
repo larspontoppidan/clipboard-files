@@ -10,7 +10,7 @@
 # http://murga-linux.com/puppy/viewtopic.php?t=111880&start=15
 #
 
-SCRIPT_REV=2021-05-16
+SCRIPT_REV=2022-04-24
 
 function syntax_error {
   echo "$(basename -- $0): Invalid command line"
