@@ -1,6 +1,7 @@
 #!/bin/bash
 
-# clipboard-files - Cut, copy and paste files from the clipboard in a Linux terminal.
+# clipboard-files-kde-plasma
+#   - Cut, copy and paste files from the clipboard in a Linux terminal.
 #
 # Read more: https://github.com/larspontoppidan/clipboard-files
 #
@@ -8,20 +9,47 @@
 #
 # Clipboard interfacing code inspired from:
 # http://murga-linux.com/puppy/viewtopic.php?t=111880&start=15
+
+
+# This is a specific version of the clipboard-files script made to work as well as 
+# possible for KDE Plasma 5.X, which uses the clipboard in a slightly more complicated
+# manner for files on the clipboard.
 #
+# The script features:
+#   - Copying files from Dolphin to terminal
+#   - Cutting files from Dolphin to terminal
+#   - Copying files from terminal to Dolphin
+#   - Copying files from terminal to terminal
+#   - Cutting files from terminal to Dolphin is NOT supported (the ccut operation)
+#
+# The main challenge is that multiple TARGETs on the X11 clipboard are generally used 
+# by Dolphin for file operations, while the script relies on the xclip terminal command 
+# which is not able to set multiple clipboard targets. But it is able to read them. 
+# Thus, xclip can't register a proper Dolphin cut/copy command. It was found that copying
+# files with the target: text/uri-list does work, however, so as a compromise the 
+# following strategy is used:
+# 
+# cpaste/cshow/ccd reads the following clipboard targets:
+#   - application/x-kde-cutselection  (if 1 it's a cut operation)
+#   - application/x-kde4-urilist
+#   - text/uri-list  (if application/x-kde4-urilist is empty, this implies a copy op.)
+#
+# ccopy writes:
+#   - text/uri-list
+#
+
 
 SCRIPT_REV=2022-04-24
 
 function syntax_error {
   echo "$(basename -- $0): Invalid command line"
-  echo "Try 'clipboard-files' for help"
+  echo "Try 'clipboard-files-kde-plasma' for help"
 }
 
 function show_help {
-  echo "clipboard-files - cut, copy and paste files from clipboard, rev. $SCRIPT_REV"
+  echo "clipboard-files-kde-plasma - cut, copy and paste files from clipboard, rev. $SCRIPT_REV"
   echo ""
   echo "Usage:"
-  echo "  ccut FILE [FILE]...   Cut files or folders to clipboard"
   echo "  ccopy FILE [FILE]...  Copy files or folders to clipboard"
   echo "  cpaste [DIR]          Paste files from clipboard into DIR or current dir"
   echo "  cshow                 Show files on clipboard"
@@ -47,7 +75,8 @@ fi
 if [[ $0 == *"ccopy" ]]; then
   op=copy
 elif [[ $0 == *"ccut" ]]; then
-  op=cut
+  echo "ccut not supported, exiting"
+  $EXIT
 elif [[ $0 == *"cpaste" ]]; then
   op=paste
 elif [[ $0 == *"cshow" ]]; then
@@ -60,20 +89,6 @@ elif [[ $sourced == true ]]; then
 else
   show_help
   $EXIT
-fi
-
-if [[ $XDG_CURRENT_DESKTOP == *"MATE"* ]]; then
-  cb_target=x-special/mate-copied-files
-elif [[ $XDG_CURRENT_DESKTOP == *"GNOME"* ]]; then
-  cb_target=x-special/gnome-copied-files
-elif [[ $XDG_CURRENT_DESKTOP == *"XFCE"* ]]; then
-  cb_target=x-special/gnome-copied-files
-elif [[ $XDG_CURRENT_DESKTOP == *"Unity"* ]]; then
-  cb_target=x-special/gnome-copied-files
-elif [[ $XDG_CURRENT_DESKTOP == *"KDE"* ]]; then
-  cb_target=x-special/KDE-copied-files
-else
-  cb_target=x-special/gnome-copied-files
 fi
 
 xclip -version 1>/dev/null 2>/dev/null
@@ -92,38 +107,45 @@ if [ "${op}" = paste ] || [ "${op}" = show ] || [ "${op}" = cd ]; then
     $EXIT
   fi
 
-  raw=$(xclip -o -selection clipboard -t ${cb_target} 2>/dev/null)
+  raw=$(xclip -o -selection clipboard -t application/x-kde4-urilist 2>/dev/null)
   result=$?
 
   if [ $result != 0 ] || [ ${#raw} == 0 ]; then
-    echo "No files on clipboard"
-    $EXIT
+    paste_mode=copy
+    raw=$(xclip -o -selection clipboard -t text/uri-list 2>/dev/null)
+    result=$?
+
+    if [ $result != 0 ] || [ ${#raw} == 0 ]; then
+      echo "No files on clipboard"
+      $EXIT
+    fi
+  else
+    mode_raw=$(xclip -o -selection clipboard -t application/x-kde-cutselection 2>/dev/null)
+    if [ "${mode_raw}" = "1" ]; then
+      paste_mode=cut
+    else
+      paste_mode=copy
+    fi
+  fi
+
+  if [ "${op}" = "show" ]; then
+    echo "Operation: ${paste_mode}"
+  elif [ "${op}" = "cd" ]; then
+    true
+  elif [ "${paste_mode}" = "cut" ]; then
+    echo "Moving the following items(s) to $target_dir"
+  else
+    echo "Copying the following items(s) to $target_dir"
   fi
 
   urldecode() { echo -e "${*//%/\\x}"; }
-
+  
   filelist=$(urldecode "$raw")
   carriage_return=$(echo -ne '\r')
 
-  first=true
   while read line
   do
      line=${line//${carriage_return}/}
-
-     if [ "$first" = true ]; then
-       first=false
-       paste_mode=$line
-       if [ "${op}" = "show" ]; then
-         echo "Operation: ${paste_mode}"
-       elif [ "${op}" = "cd" ]; then
-         true
-       elif [ "${paste_mode}" = "cut" ]; then
-         echo "Moving the following items(s) to $target_dir"
-       else
-         echo "Copying the following items(s) to $target_dir"
-       fi
-       continue
-     fi
 
      if [[ $line == file:\/\/* ]]; then
        filename=${line#file:\/\/}
@@ -158,20 +180,15 @@ if [ "${op}" = paste ] || [ "${op}" = show ] || [ "${op}" = cd ]; then
     echo -n | xclip -selection clipboard
   fi
 
-elif [ "${op}" = copy ] || [ "${op}" = cut ]; then
+elif [ "${op}" = copy ]; then
 
   if [ $# -lt 1 ]; then
     syntax_error
     $EXIT
   fi
 
-  if [ "${op}" = cut ]; then
-    clipboard="cut"
-  else
-    clipboard="copy"
-  fi
-
   count=0
+  clipboard=
   for one_arg in "$@"
   do
      if [[ ${one_arg} == -* ]]; then
@@ -182,21 +199,24 @@ elif [ "${op}" = copy ] || [ "${op}" = cut ]; then
      filename=$(realpath "${one_arg}")
 
      if [ -e "${filename}" ]; then
-       clipboard="${clipboard}
+       if [ ${#clipboard} == 0 ]; then
+         clipboard="file://${filename}"
+       else
+         clipboard="${clipboard}
 file://${filename}"
+       fi
        count=$((count+1))
      else
        echo "File doesn't exist or error: ${filename}"
      fi
   done
-
+  clipboard="${clipboard}
+"
   if [ $count -ge 1 ]; then
-    echo -n "${clipboard}" | xclip -i -selection clipboard -t ${cb_target}
+    echo -n "${clipboard}" | xclip -i -selection clipboard -t text/uri-list
     result=$?
     if [ $result != 0 ]; then
       echo "Error copying to clipboard"
-    elif [ "${op}" = cut ]; then
-      echo "${count} item(s) cut to clipboard"
     else
       echo "${count} item(s) copied to clipboard"
     fi
@@ -219,5 +239,3 @@ elif [ "${op}" = clear ]; then
 else
   syntax_error
 fi
-
-
