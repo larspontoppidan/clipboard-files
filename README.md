@@ -82,6 +82,8 @@ sudo ln -s clipboard-files ccd
 
 The following commands will install the script in `/usr/bin/` and create the required command symlinks.
 
+Go to a temporary folder and run:
+
 ```text
 git clone https://github.com/larspontoppidan/clipboard-files.git
 sudo cp clipboard-files/clipboard-files-kde-plasma /usr/bin/
@@ -100,7 +102,7 @@ cd /usr/bin
 sudo rm clipboard-files ccopy cpaste cshow cclear ccd ccut
 ```
 
-or for KDE-Plasma install:
+or for KDE-Plasma 5:
 
 ```text
 cd /usr/bin
