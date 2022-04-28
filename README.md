@@ -12,7 +12,7 @@ Read a little blog post about the script here: https://larsee.com/blog/2019/05/c
 
 - `ccut FILE [FILE]...` Cut files or folders to clipboard
 - `ccopy FILE [FILE]...` Copy files or folders to clipboard
-- `cpaste` Paste from clipboard to the current dir
+- `cpaste [DIR]` Paste files from clipboard into DIR or current dir
 - `cshow` Show files on clipboard
 - `cclear` Clear clipboard without any file operations
 - `. ccd` cd to the dir of the 1st file on clipboard
@@ -49,7 +49,8 @@ The script may not work in all desktop environments. The following should be sup
 - Mate
 - Unity
 - XFCE
-- KDE Plasma (ccut not supported)
+- KDE Plasma 5 (ccut not supported)
+- KDE
 
 ## Installation
 
@@ -59,7 +60,7 @@ The script requires `xclip`. Install from a package repository, eg.:
 sudo apt install xclip
 ```
 
-### Non-KDE-Plasma install
+### Non KDE-Plasma 5 install
 
 The following commands will install the script in `/usr/bin/` and create the required command symlinks.
 
@@ -77,7 +78,7 @@ sudo ln -s clipboard-files cclear
 sudo ln -s clipboard-files ccd
 ```
 
-### KDE-Plasma install
+### KDE-Plasma 5 install
 
 The following commands will install the script in `/usr/bin/` and create the required command symlinks.
 
@@ -97,6 +98,13 @@ sudo ln -s clipboard-files-kde-plasma ccd
 ```text
 cd /usr/bin
 sudo rm clipboard-files ccopy cpaste cshow cclear ccd ccut
+```
+
+or for KDE-Plasma install:
+
+```text
+cd /usr/bin
+sudo rm clipboard-files-kde-plasma ccopy cpaste cshow cclear ccd
 ```
 
 To remove `xclip`:
